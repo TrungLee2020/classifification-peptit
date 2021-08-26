@@ -11,4 +11,4 @@ for i in range(2000):
 
 
     # print the output
-    print(">neg_train[i]" "\n"+ my_dna)
+    print(">neg_train" "\n"+ my_dna)
