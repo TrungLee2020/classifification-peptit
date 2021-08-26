@@ -1,12 +1,14 @@
 from Bio import SeqIO
 
 my_file = open("/home/trunglx/Downloads/project_final_AI/processed/neg_training.txt")
+i = 1
+for i in range(2000):
+    # read the contents
 
-# read the contents
-my_dna = my_file.read()
+    my_file_content = my_file.read()
+    my_dna = my_file_content.rstrip("\n")
+    # calculate the length
 
-# calculate the length
-dna_length = len(my_dna)
 
-# print the output
-print("sequence is " + my_dna +  " and length is " + str(dna_length))
+    # print the output
+    print(">neg_train[i]" "\n"+ my_dna)
