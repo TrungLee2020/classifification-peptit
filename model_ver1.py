@@ -5,7 +5,7 @@ from keras.layers import *
 from keras.models import Model
 from keras import backend as K
 from tensorflow.keras.optimizers import *
-
+from sklearn.ensemble import RandomForestClassifier
 
 
 def training(epochs,attention_num,attention_range,X_train,Y_train,X_test):

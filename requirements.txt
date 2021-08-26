@@ -3,3 +3,6 @@ pandas
 keras
 tensorflow
 Biopython
+matplotlib
+scikit-learn
+torch

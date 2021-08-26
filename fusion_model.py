@@ -2,11 +2,10 @@ import numpy as np
 from keras.layers import *
 from keras.models import Model
 from keras import backend as K
-from keras import objectives
-from keras.optimizers import *
+from tensorflow.keras.optimizers import RMSprop
 import argparse
 import os
-
+import matplotlib.pyplot as plt
 
 
 def seq_to_num(line,seq_length):
@@ -14,10 +13,6 @@ def seq_to_num(line,seq_length):
     for j in range(len(line)):
         seq[seq_length - 1 - j] = protein_dict[line[len(line)-j-1]]
     return seq
-
-
-
-
 
 def get_word_freq(data):
     word_bag = []
@@ -29,7 +24,6 @@ def get_word_freq(data):
         bag = bag/np.sum(bag)
         word_bag.append(bag)
     return word_bag
-
 
 def getDepetideIndex(seq,index):
     return int((seq[index]-1)*20 + seq[index+1] - 1)
@@ -45,7 +39,6 @@ def get_depeptide_freq(data):
         depeptide_freq = depeptide_freq/np.sum(depeptide_freq)
         freqs.append(depeptide_freq)
     return freqs
-
 
 def normalization_layer(input_layer):
     output_layer = Lambda(lambda x: x - K.mean(x))(input_layer)
@@ -73,11 +66,12 @@ def training(epochs,attention_num,attention_range,X_train,Y_train,X_test):
     model.compile(optimizer=rms,loss='binary_crossentropy',metrics=['accuracy'])
     fit = model.fit([X_train_other,X_train], Y_train , epochs= epochs, batch_size = 32)
     res = model.predict([X_test_other,X_test], batch_size = 128)
+
     return res
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='proposed fusion model')
+    parser = argparse.ArgumentParser(description='proposed fusion model ver test')
 
     parser.add_argument('-epochs', default=10, type=int)
     parser.add_argument('-attention_num', default=64, type=int)
@@ -86,9 +80,12 @@ if __name__ == "__main__":
     parser.add_argument('-max_length', default=200, type=int)
     parser.add_argument('-seq_length', default=200, type=int)
     parser.add_argument('-prediction_file',default='proposed_fusion_prediction_output.txt',type=str)
-    parser.add_argument('-true_train_file', default='data/AMP.tr.fa', type=str)
-    parser.add_argument('-false_train_file', default='data/DECOY.tr.fa', type=str)
-    parser.add_argument('-test_file', default='data/AMP.te.fa', type=str)
+    # parser.add_argument('-true_train_file', default='datas/AMP.tr.fa', type=str)
+    # parser.add_argument('-false_train_file', default='datas/DECOY.tr.fa', type=str)
+    # parser.add_argument('-test_file', default='datas/AMP.te.fa', type=str)
+    parser.add_argument('-true_train_file', default='datas/AIP/Ind-positive.txt', type=str)
+    parser.add_argument('-false_train_file', default='datas/AIP/Ind-negative.txt', type=str)
+    parser.add_argument('-test_file', default='datas/AIP/benchmarking-negative.txt', type=str)
     args = parser.parse_args()
     attention_num = args.attention_num
     attention_range=args.attention_range
@@ -159,13 +156,19 @@ if __name__ == "__main__":
     X_test_bag = np.array(get_word_freq(X_test))
     X_train_other = np.concatenate([X_train_depeptide,X_train_bag],axis = 1)
     X_test_other = np.concatenate([X_test_depeptide,X_test_bag],axis = 1)
+    # print(X_train_other.shape)
+    # print(Y_train.shape)
+
 
     pred_label=training(epochs,attention_num,attention_range,X_train,Y_train,X_test)
+    plt.plot()
+    plt.show()
     current_path=os.getcwd()
     dir_list=os.listdir(current_path)
     if 'output' not in dir_list:
         os.mkdir('output')
     f=open('output/'+prediction_file,'w')
+
     for i in range(len(pred_label)):
         if pred_label[i][0]>=0.5:
             f.write('1\n')
