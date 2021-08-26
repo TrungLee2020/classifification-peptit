@@ -6,3 +6,4 @@ Biopython
 matplotlib
 scikit-learn
 torch
+tqdm
